@@ -1,4 +1,6 @@
 """
+目标检测与位姿估计（十五）：将深度图转换为pcd文件 https://blog.csdn.net/qq_37662375/article/details/108351787
+
 注意读取的点云三维坐标和颜色是分开的，分别是points和colors，而且colors中的RGB数据是归一化的，所以要乘以255.
 
 python直接读取
