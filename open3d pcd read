@@ -1,0 +1,48 @@
+"""
+注意读取的点云三维坐标和颜色是分开的，分别是points和colors，而且colors中的RGB数据是归一化的，所以要乘以255.
+
+python直接读取
+因为Kinect的使用是用C++，而当对点云数据进行处理时，使用Python比较方便。pcd文件其实就是一个txt文件，里面存储了点云信息，包括点云的数目，点云的类型（是pointxyz还是pointxyzrgb），还有点云的宽度和高度。
+这里使用的点云文件存储的点是pointxyzrgb类型，每个点存储了xyz坐标信息，还有argb信息。可以看到下图里三个浮点数就是xyz坐标了，后面的4294901502是一个32位数，argb每个通道对应了8位。要注意的是，透明度a是在RGB前面的，一般是255，所以可以看到argb的二进制数都很大。
+
+"""
+
+
+import open3d as o3d
+import numpy as np
+def read_pcd(file_path):
+	pcd = o3d.io.read_point_cloud(file_path)
+	print(np.asarray(pcd.points))
+	colors = np.asarray(pcd.colors) * 255
+	points = np.asarray(pcd.points)
+	print(points.shape, colors.shape)
+	return np.concatenate([points, colors], axis=-1)
+
+
+def load_pcd_data(file_path):
+	pts = []
+	f = open(file_path, 'r')
+	data = f.readlines()
+ 
+	f.close()
+	line = data[9]
+	# print line
+	line = line.strip('\n')
+	i = line.split(' ')
+	pts_num = eval(i[-1])
+	for line in data[11:]:
+		line = line.strip('\n')
+		xyzargb = line.split(' ')
+		x, y, z = [eval(i) for i in xyzargb[:3]]
+		argb = xyzargb[-1]
+		# print type(bgra)
+		argb = bin(eval(argb))[2:]
+		a, r, g, b = [int(argb[8 * i:8 * i + 8], 2) for i in range(4)]
+		pts.append([x, y, z, a, r, g, b])
+ 
+	assert len(pts) == pts_num
+	res = np.zeros((pts_num, len(pts[0])), dtype=np.float)
+	for i in range(pts_num):
+		res[i] = pts[i]
+	# x = np.zeros([np.array(t) for t in pts])
+	return res
