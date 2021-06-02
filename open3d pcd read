@@ -1,4 +1,5 @@
 """
+貌似答案：https://github.com/intel-isl/Open3D
 目标检测与位姿估计（十五）：将深度图转换为pcd文件 https://blog.csdn.net/qq_37662375/article/details/108351787
 pcd解读 https://www.codeleading.com/article/92152291353/
 注意读取的点云三维坐标和颜色是分开的，分别是points和colors，而且colors中的RGB数据是归一化的，所以要乘以255.
